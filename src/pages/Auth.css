@@ -1,0 +1,85 @@
+.auth-page {
+  display: flex;
+  height: 100vh;
+}
+
+.auth-left {
+  flex: 1;
+  background: linear-gradient(to bottom right, #4b00ff, #9f00ff);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.app-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.auth-right {
+  flex: 1;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-form-container {
+  border: 1px solid #ccc;
+  padding: 30px;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.auth-toggle {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.auth-toggle button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: none;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+}
+
+.auth-toggle .active {
+  background-color: #6a00ff;
+  color: white;
+  border-bottom: none;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.auth-form .forgot-link {
+  font-size: 0.8rem;
+  color: #6a00ff;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #6a00ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+}

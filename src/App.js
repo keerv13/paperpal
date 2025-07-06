@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Auth from './pages/Auth';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Auth />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
+
+
+// import bg from './bg.svg';
+// import './App.css';
+
+// function App() {
+//   return (
+//     <div className="App">
+//       <div className="SplitPane">
+//       <div
+//           className="Pane left"
+//           style={{ '--bg-image': `url(${bg})` }}
+//         ></div>
+//         <div className="Pane right">
+//           {/* Content goes here */}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
+
