@@ -2,11 +2,21 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-  email: { type: String, required: true },
+  email:    { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  entryDate: { type: Date, default: Date.now }
-});
+  // new fields:
+  resetPasswordToken:   { type: String },
+  resetPasswordExpires: { type: Date },
+  entryDate:            { type: Date, default: Date.now }
+})
 
-const User = mongoose.model('User', userSchema); // let Mongoose pluralize
+// before saving, hash password if it’s new or modified
+const bcrypt = require('bcrypt')
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next()
+  this.password = await bcrypt.hash(this.password, 12)
+  next()
+})
 
-module.exports = { User };
+const User = mongoose.model('User', userSchema)
+module.exports = { User }

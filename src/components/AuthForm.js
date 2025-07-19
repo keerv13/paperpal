@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -16,22 +16,25 @@ function AuthForm() {
 
   const axiosPostData = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/auth', {
+      const { data, status } = await axios.post('http://localhost:4000/auth', {
         email,
         password,
-        mode, // optional, if your backend needs to know login/signup
+        mode,
       });
 
-      if (response.status === 200) {
+      if (status === 200 || status === 201) {
+        // Save it somewhere global – localStorage, a Context, or even a Redux store.
+        localStorage.setItem('userId', data.user_id);
         navigate('/dashboard');
       } else {
         setError('Authentication failed. Please try again.');
       }
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Something went wrong. Try again.');
+      setError(err.response?.data?.message || err.response?.statusText || err.message);
     }
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,7 +84,9 @@ function AuthForm() {
           onChange={(e) => setPassword(e.target.value)}
         />
         {mode === 'login' && (
-          <a href="#" className="forgot-link">Forgot password?</a>
+          <Link to="/forgot-password" className="forgot-link">
+         Forgot password?
+         </Link>
         )}
 
         {error && <p className="error-message">{error}</p>}

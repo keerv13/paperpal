@@ -45,29 +45,45 @@
 .dashboard {
   display: flex;
   height: 100vh;
+  overflow: hidden;           /* kill the outer scrollbar */
 }
 
-.sidebar {
-  width: 280px;
-  background: linear-gradient(to bottom, #7f00ff, #000);
-  color: white;
-  padding: 1rem;
-}
 
 .main {
   display: flex;
   flex-direction: column;
-  flex: 1; /* take remaining height */
-  min-height: 0; /* prevent overflow */
-  padding-left: 2rem;
-  padding-right: 2rem;
+  flex: 1;
+  min-height: 0;    /* allows its children to scroll rather than grow it */
+  overflow: hidden;
+
 }
 
 
 .header {
+  position: relative;       /* ensure we can flex children */
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 0 3rem;
+            /* inward spacing for icons */
+}
+
+/* Logo & icon adjustments from before */
+.header img {
+  height: 50px;
+  width: auto;
+}
+.profile-icon {
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* 1) Make the <h2> flex:1 so it fills the gap, 2) center its text, 3) enlarge it */
+.header h2 {
+  flex: 1;
+  text-align: center;
+  font-size: 2.2rem;        /* adjust up/down to taste */
+  margin: 0;                /* remove default margins */
+  font-weight: bold;        /* if desired */
 }
 
 .upload-section {
@@ -95,15 +111,6 @@
   background-color: #f0f0f0;
 }
 
-.upload-btn {
-  background-color: #472ba6;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
 
 .doc-display {
   width: 50%;
@@ -126,95 +133,188 @@
 }
 
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 15px;
-  background: linear-gradient(to bottom, #472ba6, #250e55);
-  color: white;
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  text-align: justify;
-  padding: 5px 10;
-}
 
 /* Make chat input stay at the bottom */
+/* 1. Ensure the overall chat container is a column‑flex with full height */
 .chatbox {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100%;       /* fill available height */
+  overflow: hidden;   /* don’t let chatbox itself scroll */
 }
 
+/* 2) Only the messages scroll */
 .chat-messages {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1 1 auto;     /* take up all free space */
+  min-height: 0;      /* let it shrink when flexing */
+  overflow-y: auto;   /* internal scrollbar */
   padding: 10px;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
+/* 3) Input wrapper sits at the bottom, non‑scrolling */
 .chat-input-wrapper {
-  padding: 20px;
+  flex: 0 0 auto;     /* never grow or shrink */
   border-top: 1px solid #ddd;
   background: white;
+  padding: 20px;
 }
 
+/* 4) Your chat‑input styling */
 .chat-input {
   display: flex;
   gap: 10px;
 }
-
 .chat-input input {
   flex: 1;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
-
 .chat-input button {
   background: #472ba6;
   color: white;
   border: none;
   padding: 5px 5px;
   border-radius: 5px;
-}
-
-/* Sidebar styling */
-.chat-list {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.chat-list li {
-  padding: 8px 12px;
   cursor: pointer;
-  border-radius: 5px;
-  margin-bottom: 6px;
 }
 
-.chat-list li.active {
-  background-color: white;
-  color: #472ba6;
-  font-weight: bold;
+
+
+
+/* 2) Base bubble styles */
+/* inline‑block so its width wraps its content, up to max-width */
+.chat-messages .msg {
+  display: inline-block;    /* shrink‑wrap width */
+  width: auto;              /* override any full‑width defaults */
+  max-width: 70%;           /* cap overly long lines */
+  word-break: break-word;
+  padding: 12px 16px;
+  margin: 0;                /* vertical gap is handled by the container’s gap */
+  line-height: 1.4;
+  position: relative;       /* for tails */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.new-chat-btn {
-  background: white;
-  color: #472ba6;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  margin-top: 15px;
-  cursor: pointer;
+/* 3) Assistant (left) */
+.chat-messages .msg.assistant {
+  align-self: flex-start;
+  background: #f5f5f5;
+  color: #333;
+  border-radius: 16px 16px 16px 4px;
+}
+.chat-messages .msg.assistant::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: -8px;
+  border: 8px solid transparent;
+  border-right-color: #f5f5f5;
+}
+
+/* 4) User (right) */
+.chat-messages .msg.user {
+  align-self: flex-end;
+  background: #E6E6FA;
+  color: #333;
+  border-radius: 16px 16px 4px 16px;
+}
+.chat-messages .msg.user::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  right: -8px;
+  border: 8px solid transparent;
+  border-left-color: #E6E6FA;
+}
+
+
+/* make padding predictable everywhere */
+.sidebar {
+  width: 250px;
+  height: 100vh;              /* fill full height */
+  background-color: #4B0082;
+  padding: 1.5rem 1rem 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;           /* disable its own scroll */
+}
+
+
+.sidebar,
+.sidebar * {
+  box-sizing: border-box;
+}
+
+
+/* Search input */
+.sidebar input[type="text"] {
   width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
 }
 
+/* Chat list — fills the middle area and scrolls if needed */
+.chat-list {
+  flex: 1;                    
+  overflow-y: auto;           /* scrolling only here */
+  margin: 0;
+  padding: 0;
+}
+
+/* Each chat item */
+.chat-list li {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  /*transition: background 0.2s;*/
+}
+
+/* Hover state */
+.chat-list li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Active (selected) chat */
+.chat-list li.active {
+  background: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+}
+
+/* “New Document” button */
+.new-chat-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  background: #fff;
+  color: #4B0082;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  /*transition: background 0.2s;*/
+}
+.new-chat-btn:hover {
+  background: #f0f0f0;
+}
+
+/* Footer stays stuck at the bottom */
 .sidebar-footer {
   margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.2);
   text-align: center;
-  padding: 10px 0;
-  color: white;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
-
