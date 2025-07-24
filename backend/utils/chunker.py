@@ -51,6 +51,8 @@ def chunk_text(text, max_tokens=500, model_name="gpt-3.5-turbo"):
 
     return chunks
 
+
+
 def hybrid_chunk_sections(sections_dict, max_tokens=500, model_name="gpt-3.5-turbo"):
     all_chunks = []
 
@@ -62,5 +64,7 @@ def hybrid_chunk_sections(sections_dict, max_tokens=500, model_name="gpt-3.5-tur
                 "chunk_index": i,
                 "text": chunk
             })
+
+            
 
     return all_chunks

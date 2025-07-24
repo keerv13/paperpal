@@ -14,7 +14,6 @@ export default function ResetPassword() {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    // client‑side length check
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
       return;
@@ -23,8 +22,8 @@ export default function ResetPassword() {
 
     try {
       const { data } = await axios.post(`/auth/reset-password/${token}`, { password });
-      setMessage(data.message);          // “Password has been reset.”
-      setTimeout(() => navigate('/'), 2000); // redirect back to login after 2s
+      setMessage(data.message);          
+      setTimeout(() => navigate('/'), 7000); 
     } catch (err) {
       console.error('ResetPassword error:', err);
       const msg = err.response?.data?.message || err.message;

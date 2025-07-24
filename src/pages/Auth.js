@@ -8,7 +8,7 @@ function Auth() {
     <div className="auth-page">
       <div className="auth-left">
         <img src={logo} alt="Logo" className="auth-logo" />
-        <h1 className="app-title">Research Hive</h1>
+        <h1 className="app-title">PaperPal</h1>
       </div>
       <div className="auth-right">
         <AuthForm />

@@ -1,9 +1,12 @@
-/* PROFILE PAGE */
+/* ──────────────────────────────────────────────────────────
+   1. PAGE LAYOUT & BUTTONS
+   ──────────────────────────────────────────────────────────*/
+
 .profile-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   min-height: 100vh;
   padding: 2rem;
   background-color: #fafafa;
@@ -17,13 +20,14 @@
   font-weight: bold;
 }
 
+/* Container for profile action buttons */
 .profile-actions {
   display: flex;
   gap: 1rem;
   margin-bottom: auto;
 }
 
-/* Base button */
+/* Base button styles for all buttons */
 .profile-actions .btn,
 .back-btn {
   padding: 0.6rem 1.5rem;
@@ -33,16 +37,16 @@
   border: none;
 }
 
-/* “My Profile” button */
+/* Primary button – e.g., “My Profile” */
 .profile-actions .btn-primary {
   background-color: #4b0082;
-  color: white;
+  color: #fff;
 }
 .profile-actions .btn-primary:hover {
   background-color: #472ba6;
 }
 
-/* “Logout” button */
+/* Outlined logout button with purple border */
 .profile-actions .btn-logout {
   background: transparent;
   color: #4b0082;
@@ -50,17 +54,84 @@
 }
 .profile-actions .btn-logout:hover {
   background-color: #4b0082;
-  color: white;
+  color: #fff;
 }
 
-/* “Back to Dashboard” at bottom */
+/* “Back to Homepage” button, styled separately */
 .back-btn {
   margin-top: 2rem;
   background-color: #472ba6;
-  color: white;
+  color: #fff;
   border-radius: 20px;
   padding: 0.6rem 2rem;
 }
 .back-btn:hover {
   opacity: 0.9;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   2. LOGOUT / DELETE MODAL
+   ──────────────────────────────────────────────────────────*/
+
+/* Full-screen dark overlay for modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Centered modal box */
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-content p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+/* Modal button row */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Confirm/Proceed button inside modal */
+.modal-actions .btn-primary {
+  background-color: #4b0082;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.modal-actions .btn-primary:hover {
+  background-color: #472ba6;
+}
+
+/* Cancel/Dismiss button inside modal */
+.modal-actions .btn-secondary {
+  background: transparent;
+  color: #4b0082;
+  border: 2px solid #4b0082;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.modal-actions .btn-secondary:hover {
+  background-color: #4b0082;
+  color: #fff;
 }

@@ -1,226 +1,271 @@
-  import React, { useState } from "react";
-  import Header from "../components/Header";
-  import Sidebar from "../components/SideBar";
-  import "./Dashboard.css";
+import React, { useState, useEffect, useRef } from "react";
+import Header from "../components/Header";
+import Sidebar from "../components/SideBar";
+import ChatInput from "../components/ChatInput";
+import ConfirmModal from "../components/ConfirmModal";
+import "./Dashboard.css";
 
-  function Dashboard() {
-    const userId = localStorage.getItem('userId');
-    const [chats, setChats] = useState([]);
-    const [activeChatIndex, setActiveChatIndex] = useState(null);
+export default function Dashboard() {
+  const userId = localStorage.getItem("userId");
+  const fileInputRef = useRef(null);
 
-    const handleSetActiveChatIndex = (index) => {
-    const updatedChats = chats.map((chat, i) => ({
-      ...chat,
-      active: i === index,
-    }));
-    setChats(updatedChats);
+  const [chats, setChats] = useState([]);
+  const [activeChatIndex, setActiveChatIndex] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [toDelete, setToDelete] = useState({ documentId: null, chatIndex: null });
+
+  // fetch and auto‑activate on userId
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/chats?userId=${userId}`);
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        const formatted = data.map(chat => ({
+          documentName: chat.documentName,
+          documentId: chat.documentId,
+          chatId: chat.chatId,
+          messages: chat.messages.map(msg => ({
+            role: msg.role,
+            text: msg.text,
+            timestamp: new Date(
+              typeof msg.timestamp === "object" && msg.timestamp.$date
+                ? msg.timestamp.$date
+                : msg.timestamp
+            )
+          }))
+        }));
+        setChats(formatted);
+        if (formatted.length > 0) {
+          setChats(prev =>
+            prev.map((chat, i) => ({ ...chat, active: i === 0 }))
+          );
+          setActiveChatIndex(0);
+        }
+      } catch (err) {
+        console.error("Error loading chats:", err);
+      }
+    })();
+  }, [userId]);
+
+  // Activate first chat by default (after uploads settle)
+  useEffect(() => {
+    if (!isUploading && chats.length > 0 && activeChatIndex === null) {
+      setActiveChatIndex(0);
+      setChats(prev => prev.map((chat, i) => ({ ...chat, active: i === 0 })));
+    }
+  }, [chats, activeChatIndex, isUploading]);
+
+  // Switch active chat
+  const handleSetActiveChatIndex = index => {
+    setChats(prev => prev.map((chat, i) => ({ ...chat, active: i === index })));
     setActiveChatIndex(index);
   };
 
-
-    const startNewChat = async (file) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append('userId', userId);
-
-      try {
-        const res = await fetch("http://localhost:5000/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        // Check if upload failed
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || "Upload failed");
-        }
-
-        const data = await res.json();
-        console.log("Upload success:", data);
-
-        // ✅ Only proceed if upload was successful
-        const { documentId, chatId } = data;
-        const newChat = {
-          documentName: file.name,
-          documentId,
-          chatId,
-          messages: [],
-          active: true
-        };
-
-        const updatedChats = chats.map(chat => ({ ...chat, active: false }));
-        setChats([...updatedChats, newChat]);
-        setActiveChatIndex(updatedChats.length);
-
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        alert("Upload failed. Please check the backend.");
-        console.error("Error uploading file:", error);
-  // show the backend’s error message if there is one
-        alert(error.message || "Upload failed");
-    }
-    };
-
-
-
-
-
-
-    const handleFileChange = (e) => {
-      const file = e.target.files[0];
-      if (file) startNewChat(file);
-    };
-
-    const handleDrop = (e) => {
-      e.preventDefault();
-      if (e.dataTransfer.files.length > 0) {
-        startNewChat(e.dataTransfer.files[0]);
+  // Upload a new document + start a chat
+  const startNewChat = async file => {
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("userId", userId);
+    try {
+      const res = await fetch("http://localhost:5000/upload", {
+        method: "POST",
+        body: formData
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Upload failed");
       }
-    };
+      const { documentId, chatId } = await res.json();
+      const newChat = {
+        documentName: file.name,
+        documentId,
+        chatId,
+        messages: [],
+        active: true
+      };
+      setChats(prev =>
+        prev.map(c => ({ ...c, active: false })).concat(newChat)
+      );
+      setActiveChatIndex(chats.length);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert(error.message || "Upload failed");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-    const handleDragOver = (e) => {
-      e.preventDefault();
-    };
+  const handleFileChange = e => {
+    if (e.target.files.length > 0) {
+      startNewChat(e.target.files[0]);
+      e.target.value = null; // reset so same file can be re‑selected
+    }
+  };
 
-    const handleSendMessage = async (text) => {
-      // 1) Append the user message
-      const userMsg = { role: "user", text };
+  const handleDrop = e => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length > 0) {
+      startNewChat(e.dataTransfer.files[0]);
+    }
+  };
+  const handleDragOver = e => e.preventDefault();
+
+  // Send a chat message
+  const handleSendMessage = async text => {
+    // Append user message locally
+    setChats(prev =>
+      prev.map((chat, i) =>
+        i === activeChatIndex
+          ? { ...chat, messages: [...chat.messages, { role: "user", text }] }
+          : chat
+      )
+    );
+    try {
+      const response = await fetch("http://localhost:5000/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          chatId: chats[activeChatIndex].chatId,
+          documentId: chats[activeChatIndex].documentId,
+          query: text
+        })
+      });
+      if (!response.ok) throw new Error("Query failed");
+      const { answer } = await response.json();
       setChats(prev =>
         prev.map((chat, i) =>
           i === activeChatIndex
-            ? { ...chat, messages: [...chat.messages, userMsg] }
+            ? {
+                ...chat,
+                messages: [...chat.messages, { role: "assistant", text: answer }]
+              }
             : chat
         )
       );
+    } catch (err) {
+      console.error("Error querying:", err);
+      setChats(prev =>
+        prev.map((chat, i) =>
+          i === activeChatIndex
+            ? {
+                ...chat,
+                messages: [
+                  ...chat.messages,
+                  { role: "assistant", text: "😕 Sorry, something went wrong." }
+                ]
+              }
+            : chat
+        )
+      );
+    }
+  };
 
-      // 2) Send to your backend
-      try {
-        const res = await fetch("http://localhost:5000/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, chatId: activeChat.chatId, query: text })
-        });
-        if (!res.ok) throw new Error("Query failed");
-        const { answer } = await res.json();
+  // Delete flow
+  const handleDeleteClick = (documentId, chatIndex) => {
+    setToDelete({ documentId, chatIndex });
+    setShowConfirm(true);
+  };
+  const confirmDelete = async () => {
+    const { documentId, chatIndex } = toDelete;
+    setShowConfirm(false);
+    try {
+      const res = await fetch(
+        `http://localhost:5000/documents/${documentId}?userId=${userId}`,
+        { method: "DELETE" }
+      );
+      if (!res.ok) throw new Error(await res.text());
+      setChats(prev => {
+        const next = prev.filter((_, i) => i !== chatIndex);
+        if (activeChatIndex === chatIndex) {
+          setActiveChatIndex(next.length ? 0 : null);
+          return next.map((c, i) => ({ ...c, active: i === 0 }));
+        }
+        return next;
+      });
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Couldn’t delete document.");
+    }
+  };
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setToDelete({ documentId: null, chatIndex: null });
+  };
 
-        // 3) Append the assistant message
-        setChats(prev =>
-          prev.map((chat, i) =>
-            i === activeChatIndex
-              ? {
-                  ...chat,
-                  messages: [
-                    ...chat.messages,
-                    { role: "assistant", text: answer }
-                  ]
-                }
-              : chat
-          )
-        );
-      } catch (err) {
-        console.error(err);
-        const errorMsg = {
-          role: "assistant",
-          text: "😕 Sorry, something went wrong."
-        };
-        setChats(prev =>
-          prev.map((chat, i) =>
-            i === activeChatIndex
-              ? { ...chat, messages: [...chat.messages, errorMsg] }
-              : chat
-          )
-        );
-      }
-    };
+  const activeChat = chats[activeChatIndex];
 
+  return (
+    <div className="dashboard">
+      <Sidebar
+        chats={chats}
+        onNewChatClick={() => {
+          setActiveChatIndex(null);
+          setChats(prev => prev.map(c => ({ ...c, active: false })));
+          setIsUploading(true);
+        }}
+        setActiveChatIndex={handleSetActiveChatIndex}
+        onDeleteDocument={handleDeleteClick}
+      />
 
-
-
-    const activeChat = chats[activeChatIndex];
-
-    return (
-      <div className="dashboard">
-        <Sidebar
-          chats={chats}
-          onNewChatClick={() => {
-            setActiveChatIndex(null);
-            setChats(chats.map((c) => ({ ...c, active: false })));
-          }}
-          setActiveChatIndex={handleSetActiveChatIndex}
+      {showConfirm && (
+        <ConfirmModal
+          message="Are you sure you want to delete this document and its chat?"
+          onYes={confirmDelete}
+          onNo={cancelDelete}
         />
+      )}
 
+      <div className="main">
+        <Header />
 
-        <div className="main">
-          <Header />
+        {(isUploading || !activeChat) ? (
+          <div
+            className="upload-section"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
+            {/* Hidden file input */}
+            <input
+              id="fileInput"
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.docx,.txt"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
 
-          {!activeChat ? (
-            <div className="upload-section">
-              <p className="upload-title">
-                Upload a document to <span>summarize?</span>
-              </p>
-              <label className="upload-btn" htmlFor="file-upload">
-                Upload Document
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                accept=".pdf,.docx"
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-              />
-              <p>or</p>
-              <div
-                className="drop-zone"
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-              >
-                <img src="/upload-icon.svg" alt="Upload" />
-                <p>Drag and drop here</p>
+            {/* Drag & drop prompt */}
+            <p>📁 Drag &amp; drop a file here, or</p>
+            <label htmlFor="fileInput" className="upload-select-btn">
+              Select a File
+            </label>
+          </div>
+        ) : (
+          <div className="chatbox">
+            <div className="chat-messages">
+              {/* document title as an assistant bubble */}
+              <div className="msg user">
+                📄 {activeChat.documentName}
               </div>
+
+              {activeChat.messages.map((m, i) => (
+                <div key={i} className={`msg ${m.role}`}>
+                  {m.text}
+                </div>
+              ))}
             </div>
-          ) : (
-            <div className="chatbox">
-              <textarea
-                className="doc-display"
-                readOnly
-                value={`📄 ${activeChat.documentName}`}
-              />
-              <div className="chat-messages">
-                {activeChat.messages.map((m, i) => (
-                  <div key={i} className={`msg ${m.role}`}>
-                    {m.text}
-                  </div>
-                ))}
-              </div>
-              <div className="chat-input-wrapper">
-                <ChatInput onSend={handleSendMessage} />
-              </div>
+
+            <div className="chat-input-wrapper">
+              <ChatInput onSend={handleSendMessage} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    );
-  }
-
-  function ChatInput({ onSend }) {
-    const [input, setInput] = useState("");
-    const send = () => {
-      if (!input.trim()) return;
-      onSend(input.trim());
-      setInput("");
-    };
-    return (
-      <div className="chat-input">
-        <input
-          type="text"
-          placeholder="Ask a question..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-        />
-        <button onClick={send}>Send</button>
-      </div>
-    );
-  }
-
-  export default Dashboard;
+    </div>
+  );
+}

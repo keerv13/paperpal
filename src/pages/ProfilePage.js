@@ -1,30 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import './ProfilePage.css';
 
-
-function ProfilePage() {
+export default function ProfilePage() {
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = async () => {
-    if (!window.confirm('Are you sure you want to logout?')) {
-      return;
-    }
-
+  const confirmLogout = async () => {
     try {
-      // If you have a server‑side logout endpoint, call it:
-      // await axios.post('/auth/logout');
 
-      // Client‑side cleanup (token, user info, etc.)
       localStorage.removeItem('authToken');
-      // ...any other cleanup...
 
-      // Redirect to login page
       navigate('/login');
     } catch (err) {
       console.error('Logout failed:', err);
-      // Optionally show a message to the user
       alert('Logout failed. Please try again.');
     }
   };
@@ -35,14 +24,8 @@ function ProfilePage() {
 
       <div className="profile-actions">
         <button
-          className="btn btn-primary"
-          onClick={() => {}}
-        >
-          My Profile
-        </button>
-        <button
           className="btn btn-logout"
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
         >
           Logout
         </button>
@@ -52,11 +35,30 @@ function ProfilePage() {
         className="back-btn"
         onClick={() => navigate('/dashboard')}
       >
-        Back to HomePage
+        Back to Dashboard
       </button>
+
+      {showLogoutModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <p>Are you sure you want to log out?</p>
+            <div className="modal-actions">
+              <button
+                className="btn btn-primary"
+                onClick={confirmLogout}
+              >
+                Yes
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-
-export default ProfilePage;

@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-/**
- * ChatInput component renders a text field and send button.
- * Calls onSend(text) when the user presses Enter or clicks Send.
- */
+
 export default function ChatInput({ onSend }) {
   const [input, setInput] = useState("");
 

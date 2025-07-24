@@ -1,8 +1,21 @@
+/* Reset base margins and ensure full height */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Ensure consistent box sizing across elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Full-page auth layout split into left and right */
 .auth-page {
   display: flex;
   height: 100vh;
 }
 
+/* Left (branding) side */
 .auth-left {
   flex: 1;
   background: linear-gradient(to bottom right, #4b00ff, #9f00ff);
@@ -11,18 +24,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
 }
 
+/* Logo inside left side */
 .auth-logo {
-  width: 100px;
-  margin-bottom: 20px;
+  width: 150px;
+  margin-bottom: 10px;
 }
 
+/* App title on left side */
 .app-title {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: bold;
+  align-self: flex-start; /* Align to the left of the container */
+  margin-left: 270px;
 }
 
+/* Right (form) side */
 .auth-right {
   flex: 1;
   background-color: white;
@@ -31,6 +50,7 @@
   justify-content: center;
 }
 
+/* Form container box */
 .auth-form-container {
   border: 1px solid #ccc;
   padding: 30px;
@@ -38,6 +58,7 @@
   width: 300px;
 }
 
+/* Toggle buttons for login/register */
 .auth-toggle {
   display: flex;
   margin-bottom: 20px;
@@ -52,12 +73,14 @@
   border-radius: 5px 5px 0 0;
 }
 
+/* Active state for toggle */
 .auth-toggle .active {
   background-color: #6a00ff;
   color: white;
   border-bottom: none;
 }
 
+/* Form fields */
 .auth-form input {
   width: 100%;
   padding: 10px;
@@ -66,6 +89,16 @@
   border: 1px solid #ccc;
 }
 
+/* Error message under inputs */
+.error-message {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  margin-top: 2px;
+  margin-bottom: 12px;
+}
+
+/* Forgot password link */
 .auth-form .forgot-link {
   font-size: 0.8rem;
   color: #6a00ff;
@@ -74,6 +107,7 @@
   margin-bottom: 10px;
 }
 
+/* Submit button */
 .auth-form button {
   width: 100%;
   padding: 10px;

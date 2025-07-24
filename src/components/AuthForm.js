@@ -14,6 +14,11 @@ function AuthForm() {
     return regex.test(email);
   };
 
+  const validatePassword = (pw) => {
+  // at least 8 chars, at least one digit and one non‑alphanumeric
+  return /^(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(pw);
+  };
+
   const axiosPostData = async () => {
     try {
       const { data, status } = await axios.post('http://localhost:4000/auth', {
@@ -23,7 +28,6 @@ function AuthForm() {
       });
 
       if (status === 200 || status === 201) {
-        // Save it somewhere global – localStorage, a Context, or even a Redux store.
         localStorage.setItem('userId', data.user_id);
         navigate('/dashboard');
       } else {
@@ -44,8 +48,10 @@ function AuthForm() {
       return;
     }
 
-    if (mode === 'signup' && password.length < 8) {
-      setError('Password must be at least 8 characters long.');
+    if (mode === 'signup' && !validatePassword(password)) {
+      setError(
+        'Password must be at least 8 characters long and include at least one number and one special character.'
+      );
       return;
     }
 
@@ -70,29 +76,33 @@ function AuthForm() {
         </button>
       </div>
 
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <input
-          type="email"
+          type="text"
           placeholder="Email Address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
         />
+
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
         />
+
         {mode === 'login' && (
           <Link to="/forgot-password" className="forgot-link">
-         Forgot password?
-         </Link>
+            Forgot password?
+          </Link>
         )}
-
         {error && <p className="error-message">{error}</p>}
 
-        <button type="submit">{mode === 'login' ? 'Login' : 'Sign Up'}</button>
+        <button type="submit">
+          {mode === 'login' ? 'Login' : 'Sign Up'}
+        </button>
       </form>
+
     </div>
   );
 }
