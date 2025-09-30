@@ -15,6 +15,27 @@ A full-stack web application that allows users to upload research documents, ask
 * Mistral AI API key
 * Gmail account (for password reset emails)
 
+# Environment variables
+Set up environment variables in the ```.env``` file in the backend directory
+```
+DB_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname
+MAIL_USER=your_gmail_address
+MAIL_PASS=your_gmail_app_password
+MISTRAL_API_KEY=your_api_key
+```
+
+## Setting up Gmail for password reset:
+1. Enable 2-factor authentication on the Gmail account
+2. Generate an App Password
+3. Use email address as ```MAIL_USER```
+4. Use the generated password as ```MAIL_PASS```
+
+## Getting a Mistral API Key:
+1. Sign up at [Mistral AI](https://mistral.ai/)
+2. Navigate to API Keys section
+3. Generate a new API key
+4. Use generated API key as ```MISTRAL_API_KEY```
+
 ## How to Run
 1. Clone the repo
 ```
@@ -43,27 +64,6 @@ npm start
 ```
 python backend\app.py
 ```
-
-# Environment variables
-Set up environment variables in the ```.env``` file in the backend directory
-```
-DB_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname
-MAIL_USER=your_gmail_address
-MAIL_PASS=your_gmail_app_password
-MISTRAL_API_KEY=your_api_key
-```
-
-## Setting up Gmail for password reset:
-1. Enable 2-factor authentication on the Gmail account
-2. Generate an App Password
-3. Use email address as ```MAIL_USER```
-4. Use the generated password as ```MAIL_PASS```
-
-## Getting a Mistral API Key:
-1. Sign up at [Mistral AI](https://mistral.ai/)
-2. Navigate to API Keys section
-3. Generate a new API key
-4. Use generated API key as ```MISTRAL_API_KEY```
 
 # Output
 ## Login/Signup Page
