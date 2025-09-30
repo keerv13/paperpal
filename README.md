@@ -1,70 +1,76 @@
 # Getting Started with Create React App
+A full-stack web application that allows users to upload research documents, ask questions about them, and receive AI-generated answers based on the document using Retrieval-Augmented Generation (RAG) pipeline.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Features
+* User Authentication - Signup/login with password reset functionality
+* Document processing - - Upload document, extract texts, chunk and embed texts
+* Vector Search - Efficient semantic search using sentence embeddings
+* AI-Powered Q&A - Ask questions about your documents and get intelligent answers
+* Document Management - View and delete uploaded documents
 
-## Available Scripts
+# Prerequisites
+* Node.js (v14 or higher)
+* Python 3.x
+* MongoDB account (MongoDB Atlas or local instance)
+* Mistral AI API key
+* Gmail account (for password reset emails)
 
-In the project directory, you can run:
+## How to Run
+1. Clone the repo
+```
+git clone https://github.com/keerv13/paperpal
+```
+2. Create and activate python virtual environemnt
+```
+python -m venv venv
+venv\Scripts\activate
+```
+3. Install python dependencies
+```
+pip install -r requirements.txt
+```
+4. Run the frontend:
+```
+npm install
+npm start
+```
+5. Start the authentication server:
+```
+cd backend
+npm start
+```
+6. Start the backend for document processing
+```
+python backend\app.py
+```
 
-### `npm start`
+# Environment variables
+Set up environment variables in the ```.env``` file in the backend directory
+```
+DB_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname
+MAIL_USER=your_gmail_address
+MAIL_PASS=your_gmail_app_password
+MISTRAL_API_KEY=your_api_key
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Setting up Gmail for password reset:
+1. Enable 2-factor authentication on the Gmail account
+2. Generate an App Password
+3. Use email address as ```MAIL_USER```
+4. Use the generated password as ```MAIL_PASS```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting a Mistral API Key:
+1. Sign up at [Mistral AI](https://mistral.ai/)
+2. Navigate to API Keys section
+3. Generate a new API key
+4. Use generated API key as ```MISTRAL_API_KEY```
 
-### `npm test`
+# Output
+## Login/Signup Page
+<img width="805" height="553" alt="Image" src="https://github.com/user-attachments/assets/90814755-e2fb-4808-b16d-db473d6ded90" />
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Password Reset
+<img width="475" height="434" alt="Image" src="https://github.com/user-attachments/assets/d7fe785c-8e39-4335-848b-248fcfb7c5ef" />
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Dashboard Page
+<img width="1919" height="981" alt="Image" src="https://github.com/user-attachments/assets/d847a304-58e2-4be1-8756-2f280b70660e" />
