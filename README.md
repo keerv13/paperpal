@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Research Paper QA Chatbot
 A full-stack web application that allows users to upload research documents, ask questions about them, and receive AI-generated answers based on the document using Retrieval-Augmented Generation (RAG) pipeline.
 
 # Features
